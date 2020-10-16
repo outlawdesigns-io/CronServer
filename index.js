@@ -2,6 +2,7 @@ const express = require('express');
 const config = require('./config');
 const bodyParser = require('body-parser');
 const http = require('https');
+const fs = require('fs');
 
 const Job = require('./src/models/job');
 const Execution = require('./src/models/execution');
