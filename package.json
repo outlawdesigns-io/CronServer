@@ -1,0 +1,17 @@
+{
+  "name": "outlawdesigns.io.cram",
+  "version": "1.0.0",
+  "description": "RESTful distributed cron administartion. Maintain db of system wide cron jobs and execution histories ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cron-parser": "^2.16.3",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1"
+  }
+}
