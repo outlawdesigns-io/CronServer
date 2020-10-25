@@ -1,6 +1,6 @@
 "use strict";
 
-const Record = require('../libs/record');
+const Record = require('outlawdesigns.io.noderecord');
 
 class Execution extends Record{
 
