@@ -8,7 +8,8 @@ const Job = require('./src/models/job');
 const Execution = require('./src/models/execution');
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(require('morgan')('combined'));
 
 function _verifyToken(auth_token){
