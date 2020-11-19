@@ -1,5 +1,4 @@
 const express = require('express');
-const config = require('./config');
 const bodyParser = require('body-parser');
 const http = require('https');
 const fs = require('fs');
@@ -12,15 +11,17 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(require('morgan')('combined'));
 
+global.config = require('./config');
+
 function _verifyToken(auth_token){
   if(auth_token === undefined){
     throw {error:'Token not present'};
   }
   return new Promise(function(resolve, reject){
     let options = {
-      hostname:config.ACCNTHOST,
-      port:config.ACCNTPORT,
-      path:config.ACCNTVERIFYEND,
+      hostname:global.config.ACCNTHOST,
+      port:global.config.ACCNTPORT,
+      path:global.config.ACCNTVERIFYEND,
       method:'GET',
       headers:{
         'Content-Type':'application/json; charset=utf-8',
@@ -113,16 +114,16 @@ app.get('/job',_getAllJobs);
 app.post('/job',_postJob);
 
 
-if(config.DEBUG){
-  app.listen(config.LIVEPORT,()=>{
-    console.log('Listening on port: ' + config.LIVEPORT);
+if(global.config.DEBUG){
+  app.listen(global.config.LIVEPORT,()=>{
+    console.log('Listening on port: ' + global.config.LIVEPORT);
   });
 }else{
   http.createServer({
     key: fs.readFileSync(config.SSLKEYPATH),
     cert: fs.readFileSync(config.SSLCERTPATH)
   },app).listen(config.LIVEPORT,()=>{
-    console.log('Listening on port: ' + config.LIVEPORT);
+    console.log('Listening on port: ' + global.config.LIVEPORT);
   });
 }
 
