@@ -7,4 +7,7 @@ module.exports = {
   ACCNTPORT:9661,
   ACCNTVERIFYEND:'/verify',
   AUTHHEADER:'auth_token',
+  DBUSER:'root',
+  DBHOST:'localhost',
+  DBPASS:'test'
 };
