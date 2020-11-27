@@ -28,6 +28,15 @@ class Execution extends Record{
       }).catch(reject);
     });
   }
+  async getAll(){
+    let jobs = [];
+    let ids = await this._getAll();
+    for(let id in ids){
+      let job = await new Job(ids[id][this.primaryKey])._build();
+      jobs.push(job);
+    }
+    return jobs;
+  }
   translateDates(){
     this.startTime = this.db.date(this.startTime);
     this.endTime = this.db.date(this.endTime);

@@ -33,6 +33,15 @@ class Job extends Record{
       throw err;
     }
   }
+  async getAll(){
+    let jobs = [];
+    let ids = await this._getAll();
+    for(let id in ids){
+      let job = await new Job(ids[id][this.primaryKey])._build();
+      jobs.push(job);
+    }
+    return jobs;
+  }
   static recordExists(targetId){
     return new Promise((resolve,reject)=>{
       let obj = new Job();
