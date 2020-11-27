@@ -32,8 +32,8 @@ class Execution extends Record{
     let items = [];
     let ids = await this._getAll();
     for(let id in ids){
-      let job = await new Execution(ids[id][this.primaryKey])._build();
-      items.push(job);
+      let item = await new Execution(ids[id][this.primaryKey])._build();
+      items.push(item._buildPublicObj());
     }
     return items;
   }

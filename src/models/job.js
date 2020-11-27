@@ -38,7 +38,7 @@ class Job extends Record{
     let ids = await this._getAll();
     for(let id in ids){
       let job = await new Job(ids[id][this.primaryKey])._build();
-      jobs.push(job);
+      jobs.push(job._buildPublicObj());
     }
     return jobs;
   }
