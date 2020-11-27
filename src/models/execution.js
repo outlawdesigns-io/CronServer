@@ -29,13 +29,13 @@ class Execution extends Record{
     });
   }
   async getAll(){
-    let jobs = [];
+    let items = [];
     let ids = await this._getAll();
     for(let id in ids){
-      let job = await new Job(ids[id][this.primaryKey])._build();
-      jobs.push(job);
+      let job = await new Execution(ids[id][this.primaryKey])._build();
+      items.push(job);
     }
-    return jobs;
+    return items;
   }
   translateDates(){
     this.startTime = this.db.date(this.startTime);
