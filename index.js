@@ -11,6 +11,13 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(require('morgan')('combined'));
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, auth_token, request_token, password");
+  res.header("Access-Control-Allow-Methods", "*");
+  next();
+});
+
 global.config = require('./config');
 
 function _verifyToken(auth_token){
