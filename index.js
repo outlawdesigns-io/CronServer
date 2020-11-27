@@ -57,7 +57,7 @@ async function _checkToken(req,res,next){
 async function _getAllExecutions(req,res,next){
   if(await _checkToken(req,res,next)){
     let execution = new Execution();
-    res.send(await execution._getAll());
+    res.send(await execution.getAll());
   }
 }
 async function _getExecution(req,res,next){
@@ -82,7 +82,7 @@ async function _postExecution(req,res,next){
 async function _getAllJobs(req,res,next){
   if(await _checkToken(req,res,next)){
     let job = new Job();
-    res.send(await job._getAll());
+    res.send(await job.getAll());
   }
 }
 async function _getJob(req,res,next){
