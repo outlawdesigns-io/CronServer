@@ -22,6 +22,8 @@ class Job extends Record{
       'container',
       'imgName',
       'outfile',
+      'tz_code',
+      'tz_utc_offset',
       'created_date'
     ];
   }
