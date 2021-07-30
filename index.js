@@ -88,8 +88,19 @@ async function _postExecution(req,res,next){
 }
 async function _getAllJobs(req,res,next){
   if(await _checkToken(req,res,next)){
-    let job = new Job();
-    res.send(await job.getAll());
+    let staticjob = new Job();
+    let jobs = [];
+    let ids = await staticjob._getAll();
+    for(let id in ids){
+      let job = await new Job(ids[id].id)._build();
+      let nextRun = job.getExecutionInterval().next().toString();
+      let lastRun = job.getExecutionInterval().prev().toString();
+      let cleanObj = job._buildPublicObj();
+      cleanObj['nextRun'] = nextRun;
+      cleanObj['lastRun'] = lastRun;
+      jobs.push(cleanObj);
+    }
+    res.send(jobs);
   }
 }
 async function _getJob(req,res,next){
