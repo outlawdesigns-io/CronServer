@@ -61,6 +61,12 @@ async function _checkToken(req,res,next){
   }
   return true;
 }
+async function _getLastExecution(req, res, next){
+  if(await _checkToken(req,res,next)){
+    let execution = new Execution();
+    res.send(await execution.getLast(req.params.jobId));
+  }
+}
 async function _getAllExecutions(req,res,next){
   if(await _checkToken(req,res,next)){
     let execution = new Execution();
@@ -124,6 +130,7 @@ async function _postJob(req,res,next){
   }
 }
 
+app.get('/last/:jobId',_getLastExecution);
 app.get('/execution/:id',_getExecution);
 app.get('/execution',_getAllExecutions);
 app.post('/execution',_postExecution);

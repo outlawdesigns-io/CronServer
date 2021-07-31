@@ -41,6 +41,15 @@ class Execution extends Record{
     this.startTime = this.db.date(this.startTime);
     this.endTime = this.db.date(this.endTime);
   }
+  async getLast(jobId){
+    return new Promise((resolve,reject)=>{
+      let obj = new Execution();
+      obj.db.table(obj.table).select(obj.primaryKey).where("jobId = " + jobId).orderBy("endTime desc limit 1").execute().then(async (data)=>{
+        let exec = await new Execution(data[0][obj.primaryKey])._build();
+        resolve(exec._buildPublicObj());
+      }).catch(reject);
+    });
+  }
 }
 
 module.exports = Execution;
