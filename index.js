@@ -64,7 +64,11 @@ async function _checkToken(req,res,next){
 async function _getLastExecution(req, res, next){
   if(await _checkToken(req,res,next)){
     let execution = new Execution();
-    res.send(await execution.getLast(req.params.jobId));
+    try{
+      res.send(await execution.getLast(req.params.jobId));
+    }catch(err){
+      res.send(err);
+    }
   }
 }
 async function _getAllExecutions(req,res,next){

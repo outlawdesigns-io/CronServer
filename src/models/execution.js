@@ -45,8 +45,11 @@ class Execution extends Record{
     return new Promise((resolve,reject)=>{
       let obj = new Execution();
       obj.db.table(obj.table).select(obj.primaryKey).where("jobId = " + jobId).orderBy("endTime desc limit 1").execute().then(async (data)=>{
-        let exec = await new Execution(data[0][obj.primaryKey])._build();
-        resolve(exec._buildPublicObj());
+        if(data.length){
+          let exec = await new Execution(data[0][obj.primaryKey])._build();
+          resolve(exec._buildPublicObj());
+        }
+        reject("No Execution History")
       }).catch(reject);
     });
   }
