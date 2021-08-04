@@ -49,7 +49,7 @@ class Execution extends Record{
           let exec = await new Execution(data[0][obj.primaryKey])._build();
           resolve(exec._buildPublicObj());
         }
-        reject("No Execution History")
+        reject({error:"No Execution History"})
       }).catch(reject);
     });
   }
