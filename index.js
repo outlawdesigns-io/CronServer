@@ -1,14 +1,15 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+//const bodyParser = require('body-parser');
 const http = require('https');
 const fs = require('fs');
 
+const Busboy = require('busboy');
 const Job = require('./src/models/job');
 const Execution = require('./src/models/execution');
 
 const app = express();
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+// app.use(bodyParser.json({limit: '50mb'}));
+// app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(require('morgan')('combined'));
 
 app.use(function(req, res, next) {
@@ -86,14 +87,31 @@ async function _getExecution(req,res,next){
 }
 async function _postExecution(req,res,next){
   if(await _checkToken(req,res,next)){
+    const busboy = new Busboy({headers:req.headers});
     let model = new Execution();
-    let keys = Object.keys(req.body);
-    keys.forEach((key)=>{
-      model[key] = req.body[key];
+    fileContents = '';
+    busboy.on('file',(fieldname,file,filename,encoding,mimetype)=>{
+      file.on('data',(data)=>{
+        fileContents += data;
+      });
+      file.on('end',()=>{
+        model.output = fileContents;
+      });
     });
-    model.translateDates();
-    model = await model._create().catch(console.error);
-    return res.send(model._buildPublicObj());
+    busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{
+      model[fieldname] = val;
+    });
+    busboy.on('finish',async ()=>{
+      model.translateDates();
+      let ret = model._buildPublicObj();
+      model = await model._create().catch((err)=>{
+        console.log(err);
+      });
+      //console.log(model);
+      return res.send(model._buildPublicObj());
+      //res.send(ret);
+    });
+    return req.pipe(busboy);
   }
 }
 async function _getAllJobs(req,res,next){
@@ -124,13 +142,16 @@ async function _getJob(req,res,next){
 }
 async function _postJob(req,res,next){
   if(await _checkToken(req,res,next)){
+    const busboy = new Busboy({headers:req.headers});
     let model = new Job();
-    let keys = Object.keys(req.body);
-    keys.forEach((key)=>{
-      model[key] = req.body[key];
+    busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{
+      model[fieldname] = val;
     });
-    model = await model._create().catch(console.error);
-    return res.send(model._buildPublicObj());
+    busboy.on('finish',async ()=>{
+      model = await model._create().catch(console.error);
+      return res.send(model._buildPublicObj());
+    });
+    return req.pipe(busboy);
   }
 }
 
