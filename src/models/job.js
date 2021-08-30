@@ -6,7 +6,8 @@ const parser = require('cron-parser');
 class Job extends Record{
 
   constructor(id){
-    const database = 'cron';
+    // const database = 'cron';
+    const database = process.env.NODE_ENV == 'production' ? 'cron':'cron_test';
     const table = 'job';
     const primaryKey = 'id';
     super(database,table,primaryKey,id);
@@ -54,6 +55,10 @@ class Job extends Record{
         resolve(true);
       }).catch(reject);
     });
+  }
+  static truncate(){
+    let obj = new Job();
+    return obj.db.table(obj.table).truncate().execute();
   }
 }
 

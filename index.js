@@ -10,13 +10,15 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 /*SETUP THE EXPRESS SERVER*/
 const app = express();
-app.use(require('morgan')('combined'));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, auth_token, request_token, password");
   res.header("Access-Control-Allow-Methods", "*");
   next();
 });
+if(process.env.NODE_ENV !== 'testing'){
+  app.use(require('morgan')('combined'));
+}
 
 const cronServer = new CronServer();
 
@@ -43,6 +45,8 @@ if(process.env.NODE_ENV !== 'production'){
     console.log(process.env.NODE_ENV + ' mode listening on port: ' + global.config[process.env.NODE_ENV].PORT);
   });
 }
+
+module.exports = app; // makes the server available for testing
 
 /*
 keeping track of system wide crons.

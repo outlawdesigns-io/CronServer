@@ -48,7 +48,7 @@ class CronServer{
     return true;
   }
   async getLastExecution(req, res, next){
-    if(await CronServer.checkToken(req,res,next)){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       let execution = new Execution();
       try{
         res.send(await execution.getLast(req.params.jobId));
@@ -58,20 +58,20 @@ class CronServer{
     }
   }
   async getAllExecutions(req,res,next){
-    if(await CronServer.checkToken(req,res,next)){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       let execution = new Execution();
       res.send(await execution.getAll());
     }
   }
   async getExecution(req,res,next){
-    if(await CronServer.checkToken(req,res,next)){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       let job = new Execution(req.params.id);
       await job._build();
       res.send(job._buildPublicObj());
     }
   }
   async postExecution(req,res,next){
-    if(await CronServer.checkToken(req,res,next)){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       const busboy = new Busboy({headers:req.headers});
       let model = new Execution();
       fileContents = '';
@@ -98,7 +98,7 @@ class CronServer{
     }
   }
   async getAllJobs(req,res,next){
-    if(await CronServer.checkToken(req,res,next)){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       let staticjob = new Job();
       let jobs = [];
       let ids = await staticjob._getAll();
@@ -115,16 +115,20 @@ class CronServer{
     }
   }
   async getJob(req,res,next){
-    if(await CronServer.checkToken(req,res,next)){
-      let job = await new Job(req.params.id)._build();
-      let obj = job._buildPublicObj();
-      obj['nextRun'] = job.getExecutionInterval().next().toString();
-      obj['lastRun'] = job.getExecutionInterval().prev().toString();
-      res.send(obj);
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+      try{
+        let job = await new Job(req.params.id)._build();
+        let obj = job._buildPublicObj();
+        obj['nextRun'] = job.getExecutionInterval().next().toString();
+        obj['lastRun'] = job.getExecutionInterval().prev().toString();
+        res.send(obj);
+      }catch(err){
+        res.status(404).send('Not Found');
+      }
     }
   }
   async postJob(req,res,next){
-    if(await CronServer.checkToken(req,res,next)){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       const busboy = new Busboy({headers:req.headers});
       let model = new Job();
       busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{

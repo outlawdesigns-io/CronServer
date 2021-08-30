@@ -4,7 +4,7 @@
   "description": "RESTful distributed cron administartion. Maintain db of system wide cron jobs and execution histories ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --exit",
     "start": "node index.js"
   },
   "repository": {
@@ -20,5 +20,10 @@
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "outlawdesigns.io.noderecord": "^1.0.5"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "mocha": "^9.1.1"
   }
 }
