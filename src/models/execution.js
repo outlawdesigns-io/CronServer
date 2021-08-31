@@ -54,6 +54,14 @@ class Execution extends Record{
       }).catch(reject);
     });
   }
+  static truncate(){
+    let obj = new Execution();
+    return obj.db.table(obj.table).truncate().execute();
+  }
+  static delete(targetId){
+    let obj = new Execution();
+    return obj.db.table(obj.table).delete().where(obj.primaryKey + ' = ' + targetId).execute();
+  }
 }
 
 module.exports = Execution;

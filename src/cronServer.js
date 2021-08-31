@@ -65,9 +65,13 @@ class CronServer{
   }
   async getExecution(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      let job = new Execution(req.params.id);
-      await job._build();
-      res.send(job._buildPublicObj());
+      try{
+        let job = new Execution(req.params.id);
+        await job._build();
+        return res.send(job._buildPublicObj());
+      }catch(err){
+        return res.status(404).send('Not Found');
+      }
     }
   }
   async postExecution(req,res,next){
@@ -95,6 +99,32 @@ class CronServer{
         return res.send(model._buildPublicObj());
       });
       return req.pipe(busboy);
+    }
+  }
+  async putExecution(req,res,next){
+    const busboy = new Busboy({headers:req.headers});
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+      try{
+        let model = await new Execution(req.params.id)._build();
+        busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{model[fieldname] = val;});
+        busboy.on('finish',async ()=>{
+          model = await model._update();
+          return res.send(model._buildPublicObj());
+        });
+        return req.pipe(busboy);
+      }catch(err){
+        res.status(400).send(err);
+      }
+    }
+  }
+  async deleteExecution(req,res,next){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+      try{
+        await Execution.delete(req.params.id);
+        return res.send({message:'Target Object Deleted',id:req.params.id});
+      }catch(err){
+        return res.status(400).send(err);
+      }
     }
   }
   async getAllJobs(req,res,next){
@@ -139,6 +169,32 @@ class CronServer{
         return res.send(model._buildPublicObj());
       });
       return req.pipe(busboy);
+    }
+  }
+  async putJob(req,res,next){
+    const busboy = new Busboy({headers:req.headers});
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+      try{
+        let model = await new Job(req.params.id)._build();
+        busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{model[fieldname] = val;});
+        busboy.on('finish',async ()=>{
+          model = await model._update();
+          return res.send(model._buildPublicObj());
+        });
+        return req.pipe(busboy);
+      }catch(err){
+        res.status(400).send(err);
+      }
+    }
+  }
+  async deleteJob(req,res,next){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+      try{
+        await Job.delete(req.params.id);
+        return res.send({message:'Target Object Deleted',id:req.params.id});
+      }catch(err){
+        return res.status(400).send(err);
+      }
     }
   }
 }

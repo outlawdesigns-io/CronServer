@@ -28,7 +28,7 @@ function _createJob(targetObj){
 
 chai.use(chaiHttp);
 
-describe('jobs',()=>{
+describe('Jobs',()=>{
   beforeEach((done)=>{
     Job.truncate().then(()=>{done()});
   });
@@ -82,6 +82,35 @@ describe('jobs',()=>{
           res.body.should.have.property('imgName');
           res.body.should.have.property('outfile');
           res.body.should.have.property('created_date');
+        });
+        done();
+      });
+    });
+  });
+  describe('/PUT/:id job',()=>{
+    it('should UPDATE a job by the given id',(done)=>{
+      let job = _createJob(testJob);
+      let updateJob = testJob;
+      updateJob.title = 'updated test';
+      job._create().then(()=>{
+        chai.request(server).put('/job/' + job.id).send(updateJob).end((err,res)=>{
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('title').eql(updateJob.title);
+        });
+        done();
+      });
+    });
+  });
+  describe('/DELETE/:id job',()=>{
+    it('should DELETE a job given the id',(done)=>{
+      let job = _createJob(testJob);
+      job._create().then(()=>{
+        chai.request(server).delete('/job/' + job.id).end((err,res)=>{
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('id').eql(job.id.toString());
+          res.body.should.have.property('message').eql('Target Object Deleted');
         });
         done();
       });

@@ -24,10 +24,16 @@ const cronServer = new CronServer();
 
 /*MAP ROUTES*/
 app.get('/last/:jobId',cronServer.getLastExecution);
+
 app.get('/execution/:id',cronServer.getExecution);
+app.put('/execution/:id',cronServer.putExecution);
+app.delete('/execution/:id',cronServer.deleteExecution);
 app.get('/execution',cronServer.getAllExecutions);
 app.post('/execution',cronServer.postExecution);
+
 app.get('/job/:id',cronServer.getJob);
+app.put('/job/:id',cronServer.putJob);
+app.delete('/job/:id',cronServer.deleteJob);
 app.get('/job',cronServer.getAllJobs);
 app.post('/job',cronServer.postJob);
 

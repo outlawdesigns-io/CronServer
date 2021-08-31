@@ -60,6 +60,10 @@ class Job extends Record{
     let obj = new Job();
     return obj.db.table(obj.table).truncate().execute();
   }
+  static delete(targetId){
+    let obj = new Job();
+    return obj.db.table(obj.table).delete().where(obj.primaryKey + ' = ' + targetId).execute();
+  }
 }
 
 module.exports = Job;
