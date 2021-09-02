@@ -93,7 +93,7 @@ class CronServer{
       busboy.on('finish',async ()=>{
         model.translateDates();
         let ret = model._buildPublicObj();
-        model = await model.create().catch((err)=>{
+        model = await model._create().catch((err)=>{
           console.log(err);
         });
         return res.send(model._buildPublicObj());
