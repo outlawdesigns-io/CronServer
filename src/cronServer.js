@@ -78,7 +78,7 @@ class CronServer{
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       const busboy = new Busboy({headers:req.headers});
       let model = new Execution();
-      fileContents = '';
+      let fileContents = '';
       busboy.on('file',(fieldname,file,filename,encoding,mimetype)=>{
         file.on('data',(data)=>{
           fileContents += data;
