@@ -1,4 +1,4 @@
-FROM node:carbon
+FROM node:latest
 WORKDIR /usr/src/app/
 ENV TZ=America/Chicago
 ENV NODE_ENV=production
