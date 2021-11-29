@@ -2,8 +2,8 @@ FROM node:latest
 WORKDIR /usr/src/app/
 ENV TZ=America/Chicago
 ENV NODE_ENV=production
-RUN curl http://loe.outlawdesigns.io/Documents/LOE_MX/certs/outlawdesigns_wildcard/fullchain.pem > fullchain.pem
-RUN curl http://loe.outlawdesigns.io/Documents/LOE_MX/certs/outlawdesigns_wildcard/privkey.pem > privkey.pem
+RUN curl https://loe.outlawdesigns.io/Documents/LOE_MX/certs/outlawdesigns_wildcard/fullchain.pem > fullchain.pem
+RUN curl https://loe.outlawdesigns.io/Documents/LOE_MX/certs/outlawdesigns_wildcard/privkey.pem > privkey.pem
 RUN mkdir -p /mnt/LOE/log
 COPY . .
 RUN npm install
