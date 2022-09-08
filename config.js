@@ -1,8 +1,8 @@
 module.exports = {
   development:{
     PORT:9550,
-    SSLCERTPATH:'/usr/src/app/fullchain.pem',
-    SSLKEYPATH:'/usr/src/app/privkey.pem',
+    SSLCERTPATH:'/etc/apache2/certs/fullchain.pem',
+    SSLKEYPATH:'/etc/apache2/certs/privkey.pem',
     ACCNTHOST:'api.outlawdesigns.io',
     ACCNTPORT:9661,
     ACCNTVERIFYEND:'/verify',
@@ -13,8 +13,8 @@ module.exports = {
   },
   testing:{
     PORT:9550,
-    SSLCERTPATH:'/usr/src/app/fullchain.pem',
-    SSLKEYPATH:'/usr/src/app/privkey.pem',
+    SSLCERTPATH:'/etc/apache2/certs/fullchain.pem',
+    SSLKEYPATH:'/etc/apache2/certs/privkey.pem',
     ACCNTHOST:'api.outlawdesigns.io',
     ACCNTPORT:9661,
     ACCNTVERIFYEND:'/verify',
@@ -25,8 +25,8 @@ module.exports = {
   },
   production:{
     PORT:9550,
-    SSLCERTPATH:'/usr/src/app/fullchain.pem',
-    SSLKEYPATH:'/usr/src/app/privkey.pem',
+    SSLCERTPATH:'/etc/apache2/certs/fullchain.pem',
+    SSLKEYPATH:'/etc/apache2/certs/privkey.pem',
     ACCNTHOST:'api.outlawdesigns.io',
     ACCNTPORT:9661,
     ACCNTVERIFYEND:'/verify',
