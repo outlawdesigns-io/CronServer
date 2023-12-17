@@ -17,7 +17,13 @@ app.use(function(req, res, next) {
   next();
 });
 if(process.env.NODE_ENV !== 'testing'){
-  app.use(require('morgan')('combined'));
+  //app.use(require('morgan')('combined'));
+  var morgan = require('morgan');
+  morgan.token('date', function() {
+    var p = new Date().toString().replace(/[A-Z]{3}\+/,'+').split(/ /);
+    return( p[2]+'/'+p[1]+'/'+p[3]+':'+p[4]+' '+p[5].replace('GMT','') );
+  });
+  app.use(morgan());	
 }
 
 const cronServer = new CronServer();
