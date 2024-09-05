@@ -66,7 +66,7 @@ describe('Jobs',()=>{
   describe('/GET/:id job',()=>{
     it('should GET a job by the given id',(done)=>{
       let job = _createJob(testJob);
-      job._create().then(()=>{
+      job.create().then(()=>{
         chai.request(server).get('/job/' + job.id).end((err,res)=>{
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -92,7 +92,7 @@ describe('Jobs',()=>{
       let job = _createJob(testJob);
       let updateJob = testJob;
       updateJob.title = 'updated test';
-      job._create().then(()=>{
+      job.create().then(()=>{
         chai.request(server).put('/job/' + job.id).send(updateJob).end((err,res)=>{
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -105,7 +105,7 @@ describe('Jobs',()=>{
   describe('/DELETE/:id job',()=>{
     it('should DELETE a job given the id',(done)=>{
       let job = _createJob(testJob);
-      job._create().then(()=>{
+      job.create().then(()=>{
         chai.request(server).delete('/job/' + job.id).end((err,res)=>{
           res.should.have.status(200);
           res.body.should.be.a('object');

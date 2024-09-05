@@ -23,25 +23,29 @@ if(process.env.NODE_ENV !== 'testing'){
     var p = new Date().toString().replace(/[A-Z]{3}\+/,'+').split(/ /);
     return( p[2]+'/'+p[1]+'/'+p[3]+':'+p[4]+' '+p[5].replace('GMT','') );
   });
-  app.use(morgan());	
+  app.use(morgan());
 }
 
 const cronServer = new CronServer();
 
 /*MAP ROUTES*/
 app.get('/last/:jobId',cronServer.getLastExecution);
+app.get('/next/:jobId',cronServer.getNextJobExecution);
+app.get('/next/pattern/:cronPattern',cronServer.getNextExecution);
+app.get('/build/:targethost/:isImg',cronServer.buildCronFile);
 
 app.get('/execution/:id',cronServer.getExecution);
-app.put('/execution/:id',cronServer.putExecution);
-app.delete('/execution/:id',cronServer.deleteExecution);
+app.put('/execution/:id',cronServer.putModel("execution"));
+app.delete('/execution/:id',cronServer.deleteModel("execution"));
 app.get('/execution',cronServer.getAllExecutions);
 app.post('/execution',cronServer.postExecution);
 
 app.get('/job/:id',cronServer.getJob);
-app.put('/job/:id',cronServer.putJob);
-app.delete('/job/:id',cronServer.deleteJob);
+app.put('/job/:id',cronServer.putModel("job"));
+app.delete('/job/:id',cronServer.deleteModel("job"));
 app.get('/job',cronServer.getAllJobs);
 app.post('/job',cronServer.postJob);
+app.get('/job/:id/avg',cronServer.getJobAverageExecution);
 
 
 /*START SERVER*/
@@ -59,13 +63,3 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 module.exports = app; // makes the server available for testing
-
-/*
-keeping track of system wide crons.
-Cron service?
- /next/{pattern} || {id}
-	return date of next run
-
-#https://api.outlawdesigns.io:9550/next/{jobID || cron pattern}
-#https://api.outlawdesigns.io:9550/build/{hostname}
-*/

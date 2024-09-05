@@ -54,7 +54,7 @@ describe('Executions',()=>{
   describe('/GET/:id execution',()=>{
     it('should GET an execution by the given id',(done)=>{
       let model = _createModel(testModel);
-      model._create().then(()=>{
+      model.create().then(()=>{
         chai.request(server).get('/execution/' + model.id).end((err,res)=>{
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -73,7 +73,7 @@ describe('Executions',()=>{
       let model = _createModel(testModel);
       let updateModel = testModel;
       updateModel.output = '/tmp/trash';
-      model._create().then(()=>{
+      model.create().then(()=>{
         chai.request(server).put('/execution/' + model.id).send(updateModel).end((err,res)=>{
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -86,7 +86,7 @@ describe('Executions',()=>{
   describe('/DELETE/:id execution',()=>{
     it('should DELETE an execution given the id',(done)=>{
       let model = _createModel(testModel);
-      model._create().then(()=>{
+      model.create().then(()=>{
         chai.request(server).delete('/execution/' + model.id).end((err,res)=>{
           res.should.have.status(200);
           res.body.should.be.a('object');

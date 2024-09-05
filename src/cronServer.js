@@ -2,10 +2,13 @@
 
 const http = require('https');
 const Busboy = require('busboy');
-const Job = require('./models/job');
-const Execution = require('./models/execution');
+// const Job = require('./models/job');
+// const Execution = require('./models/execution');
+
+const ModelFactory = require('./modelFactory');
 
 class CronServer{
+  static NullStr = 'null';
   static verifyToken(auth_token){
     if(auth_token === undefined){
       throw {error:'Token not present'};
@@ -47,28 +50,75 @@ class CronServer{
     }
     return true;
   }
+  putModel(modelStr){
+    return async(req,res,next) => {
+      const busboy = new Busboy({headers:req.headers});
+      if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+        try{
+          let model = await ModelFactory.get(req.params.id).init();
+          busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{model[fieldname] = val == CronServer.NullStr ? null:val; });
+          busboy.on('finish',async ()=>{
+            await model.update();
+            return res.send(model.getPublicProperties());
+          });
+          return req.pipe(busboy);
+        }catch(err){
+          res.status(400).send(err);
+        }
+      }
+    }
+  }
+  deleteModel(modelStr){
+    return async(req,res,next)=>{
+      if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+        try{
+          await ModelFactory.getClass(modelStr).delete(req.params.id);
+          return res.send({message:'Target Object Deleted',id:req.params.id});
+        }catch(err){
+          return res.status(400).send(err);
+        }
+      }
+    }
+  }
   async getLastExecution(req, res, next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      let execution = new Execution();
       try{
-        res.send(await execution.getLast(req.params.jobId));
+        res.send(await ModelFactory.getClass('execution').getLast(req.params.jobId));
       }catch(err){
         res.send(err);
       }
     }
   }
+  async getNextJobExecution(req, res, next){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+      try{
+        let job = await ModelFactory.get('job',req.params.jobId).init();
+        res.send({job:req.params.jobId,next:job.getExecutionInterval().next().toString()});
+      }catch(err){
+        res.status(400).send(err);
+      }
+    }
+  }
+  async getNextExecution(req,res,next){
+    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
+      let cronPattern = decodeURI(req.params.cronPattern);
+      try{
+        res.send({pattern:cronPattern,next:ModelFactory.getClass('job').getPatternInterval(cronPattern).next().toString()});
+      }catch(err){
+        res.status(400).send(err);
+      }
+    }
+  }
   async getAllExecutions(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      let execution = new Execution();
-      res.send(await execution.getAll());
+      res.send(await ModelFactory.getClass('execution').getAll());
     }
   }
   async getExecution(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       try{
-        let job = new Execution(req.params.id);
-        await job._build();
-        return res.send(job._buildPublicObj());
+        let model = await ModelFactory.get('execution',req.params.id).init();
+        return res.send(model.getPublicProperties());
       }catch(err){
         return res.status(404).send('Not Found');
       }
@@ -77,7 +127,7 @@ class CronServer{
   async postExecution(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       const busboy = new Busboy({headers:req.headers});
-      let model = new Execution();
+      let model = ModelFactory.get('execution');
       let fileContents = '';
       busboy.on('file',(fieldname,file,filename,encoding,mimetype)=>{
         file.on('data',(data)=>{
@@ -92,51 +142,24 @@ class CronServer{
       });
       busboy.on('finish',async ()=>{
         model.translateDates();
-        let ret = model._buildPublicObj();
-        model = await model._create().catch((err)=>{
+        let ret = model.getPublicProperties();
+        model = await model.create().catch((err)=>{
           console.log(err);
         });
-        return res.send(model._buildPublicObj());
+        return res.send(model.getPublicProperties());
       });
       return req.pipe(busboy);
     }
   }
-  async putExecution(req,res,next){
-    const busboy = new Busboy({headers:req.headers});
-    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      try{
-        let model = await new Execution(req.params.id)._build();
-        busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{model[fieldname] = val;});
-        busboy.on('finish',async ()=>{
-          model = await model._update();
-          return res.send(model._buildPublicObj());
-        });
-        return req.pipe(busboy);
-      }catch(err){
-        res.status(400).send(err);
-      }
-    }
-  }
-  async deleteExecution(req,res,next){
-    if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      try{
-        await Execution.delete(req.params.id);
-        return res.send({message:'Target Object Deleted',id:req.params.id});
-      }catch(err){
-        return res.status(400).send(err);
-      }
-    }
-  }
   async getAllJobs(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      let staticjob = new Job();
       let jobs = [];
-      let ids = await staticjob._getAll();
+      let ids = await ModelFactory.getClass('job').getAll();
       for(let id in ids){
-        let job = await new Job(ids[id].id)._build();
+        let job = await ModelFactory.get('job',ids[id].id).init();
         let nextRun = job.getExecutionInterval().next().toString();
         let lastRun = job.getExecutionInterval().prev().toString();
-        let cleanObj = job._buildPublicObj();
+        let cleanObj = job.getPublicProperties();
         cleanObj['nextRun'] = nextRun;
         cleanObj['lastRun'] = lastRun;
         jobs.push(cleanObj);
@@ -147,8 +170,8 @@ class CronServer{
   async getJob(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       try{
-        let job = await new Job(req.params.id)._build();
-        let obj = job._buildPublicObj();
+        let job = await ModelFactory.get('job',req.params.id).init();
+        let obj = job.getPublicProperties();
         obj['nextRun'] = job.getExecutionInterval().next().toString();
         obj['lastRun'] = job.getExecutionInterval().prev().toString();
         res.send(obj);
@@ -160,40 +183,36 @@ class CronServer{
   async postJob(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       const busboy = new Busboy({headers:req.headers});
-      let model = new Job();
+      let model = ModelFactory.get('job');
       busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{
         model[fieldname] = val;
       });
       busboy.on('finish',async ()=>{
-        model = await model._create().catch(console.error);
-        return res.send(model._buildPublicObj());
+        model = await model.create().catch(console.error);
+        return res.send(model.getPublicProperties());
       });
       return req.pipe(busboy);
     }
   }
-  async putJob(req,res,next){
-    const busboy = new Busboy({headers:req.headers});
+  async buildCronFile(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      try{
-        let model = await new Job(req.params.id)._build();
-        busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{model[fieldname] = val;});
-        busboy.on('finish',async ()=>{
-          model = await model._update();
-          return res.send(model._buildPublicObj());
-        });
-        return req.pipe(busboy);
-      }catch(err){
-        res.status(400).send(err);
+      let fileStr = await ModelFactory.getClass('job').buildCronFile(req.params.targethost,(req.params.isImg === 'true'));
+      if(!fileStr){
+        res.send({error:'No jobs'});
+      }else{
+        res.set({"Content-Disposition":"attachment; filename=\"crontab\""});
+        res.send(fileStr);
       }
     }
   }
-  async deleteJob(req,res,next){
+  async getJobAverageExecution(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
       try{
-        await Job.delete(req.params.id);
-        return res.send({message:'Target Object Deleted',id:req.params.id});
+        let avg = await ModelFactory.getClass('execution').getAverageExecutionTime(req.params.id);
+        return res.send({'avg_execution_seconds':avg});
       }catch(err){
-        return res.status(400).send(err);
+        // console.log(err);
+        return res.send({'error':err.message});
       }
     }
   }
