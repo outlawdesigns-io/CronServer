@@ -1,9 +1,7 @@
 "use strict";
 
 const http = require('https');
-const Busboy = require('busboy');
-// const Job = require('./models/job');
-// const Execution = require('./models/execution');
+const busboy = require('busboy');
 
 const ModelFactory = require('./modelFactory');
 
@@ -52,16 +50,16 @@ class CronServer{
   }
   putModel(modelStr){
     return async(req,res,next) => {
-      const busboy = new Busboy({headers:req.headers});
+      const bb = busboy({headers:req.headers});
       if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
         try{
           let model = await ModelFactory.get(req.params.id).init();
-          busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{model[fieldname] = val == CronServer.NullStr ? null:val; });
-          busboy.on('finish',async ()=>{
+          bb.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{model[fieldname] = val == CronServer.NullStr ? null:val; });
+          bb.on('finish',async ()=>{
             await model.update();
             return res.send(model.getPublicProperties());
           });
-          return req.pipe(busboy);
+          return req.pipe(bb);
         }catch(err){
           res.status(400).send(err);
         }
@@ -126,10 +124,10 @@ class CronServer{
   }
   async postExecution(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      const busboy = new Busboy({headers:req.headers});
+      const bb = busboy({headers:req.headers});
       let model = ModelFactory.get('execution');
       let fileContents = '';
-      busboy.on('file',(fieldname,file,filename,encoding,mimetype)=>{
+      bb.on('file',(fieldname,file,filename,encoding,mimetype)=>{
         file.on('data',(data)=>{
           fileContents += data;
         });
@@ -137,10 +135,10 @@ class CronServer{
           model.output = fileContents;
         });
       });
-      busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{
+      bb.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{
         model[fieldname] = val;
       });
-      busboy.on('finish',async ()=>{
+      bb.on('finish',async ()=>{
         model.translateDates();
         let ret = model.getPublicProperties();
         model = await model.create().catch((err)=>{
@@ -148,7 +146,7 @@ class CronServer{
         });
         return res.send(model.getPublicProperties());
       });
-      return req.pipe(busboy);
+      return req.pipe(bb);
     }
   }
   async getAllJobs(req,res,next){
@@ -182,16 +180,20 @@ class CronServer{
   }
   async postJob(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      const busboy = new Busboy({headers:req.headers});
+      const bb = busboy({headers:req.headers});
       let model = ModelFactory.get('job');
-      busboy.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{
+      bb.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{
         model[fieldname] = val;
       });
-      busboy.on('finish',async ()=>{
+      bb.on('finish',async ()=>{
+        model.created_date = model.db.date();
         model = await model.create().catch(console.error);
-        return res.send(model.getPublicProperties());
+        let returnObj = model.getPublicProperties();
+        returnObj['nextRun'] = model.getExecutionInterval().next().toString();
+        returnObj['lastRun'] = model.getExecutionInterval().prev().toString();
+        return res.send(returnObj);
       });
-      return req.pipe(busboy);
+      return req.pipe(bb);
     }
   }
   async buildCronFile(req,res,next){

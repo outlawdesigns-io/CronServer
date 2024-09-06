@@ -73,6 +73,14 @@ class Execution extends Record{
       throw err;
     }
   }
+  static async deleteJobHistory(jobId){
+    try{
+      let obj = new Execution();
+      return obj.db.table(obj.table).delete().where('jobId = ' + jobId).execute();
+    }catch(err){
+      throw err;
+    }
+  }
 }
 
 module.exports = Execution;

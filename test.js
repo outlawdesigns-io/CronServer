@@ -4,8 +4,9 @@ const Job = require('./src/models/job');
 const Execution = require('./src/models/execution');
 
 (async ()=>{
-  let jobs = await Job.getByHost('api',false);
-  console.log(jobs);
+  //let jobs = await Job.getByHost('api',false);
+  //console.log(jobs);
+  // await Execution.deleteJobHistory(10);
   // await Job.truncate();
   // await Execution.truncate();
   //await Execution.db.close();

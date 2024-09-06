@@ -1,8 +1,9 @@
 "use strict";
 
-const Record = require('outlawdesigns.io.noderecord');
 const parser = require('cron-parser');
+const Record = require('outlawdesigns.io.noderecord');
 const CronTemplate = require('../cronTemplate');
+const Execution = require('./execution');
 
 class Job extends Record{
 
@@ -82,9 +83,14 @@ class Job extends Record{
     let obj = new Job();
     return obj.db.table(obj.table).truncate().execute();
   }
-  static delete(targetId){
-    let obj = new Job();
-    return obj.db.table(obj.table).delete().where(obj.primaryKey + ' = ' + targetId).execute();
+  static async delete(targetId){
+    try{
+      await Execution.deleteJobHistory(targetId);
+      let obj = new Job();
+      return obj.db.table(obj.table).delete().where(obj.primaryKey + ' = ' + targetId).execute();
+    }catch(err){
+      throw err;
+    }
   }
   static getPatternInterval(patternStr){
     try{
