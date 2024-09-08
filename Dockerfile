@@ -1,7 +1,8 @@
 FROM node:latest
 WORKDIR /usr/src/app/
+ARG ENV
 ENV TZ=America/Chicago
-ENV NODE_ENV=production
+ENV NODE_ENV=$ENV
 RUN mkdir -p /mnt/LOE/log
 RUN mkdir -p /etc/apache2/certs/
 RUN echo America/Chicago > /etc/timezone
