@@ -8,8 +8,7 @@ const Execution = require('./execution');
 class Job extends Record{
 
   constructor(id){
-    // const database = 'cron';
-    const database = process.env.NODE_ENV == 'production' ? 'cron':'cron_test';
+    const database = global.config[process.env.NODE_ENV].DB_DB;
     const table = 'job';
     const primaryKey = 'id';
     super(database,table,primaryKey,id);

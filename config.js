@@ -10,6 +10,7 @@ module.exports = {
     DBUSER:'root',
     DBHOST:'localhost',
     DBPASS:'',
+    DB_DB:'cron_test',
   },
   testing:{
     PORT:9550,
@@ -22,6 +23,7 @@ module.exports = {
     DBUSER:'root',
     DBHOST:'localhost',
     DBPASS:'',
+    DB_DB:'cron_test',
   },
   production:{
     PORT:9550,
@@ -34,5 +36,6 @@ module.exports = {
     DBUSER:'root',
     DBHOST:'localhost',
     DBPASS:'',
+    DB_DB:'cron',
   }
 };
