@@ -28,16 +28,6 @@ class Execution extends Record{
       }).catch(reject);
     });
   }
-  static async getAll(){
-    let items = [];
-    let obj = new Execution();
-    let ids = await obj._getAll();
-    for(let id in ids){
-      let item = await new Execution(ids[id][obj.primaryKey]).init();
-      items.push(item.getPublicProperties());
-    }
-    return items;
-  }
   translateDates(){
     this.startTime = this.db.date(this.startTime);
     this.endTime = this.db.date(this.endTime);
@@ -53,14 +43,6 @@ class Execution extends Record{
         reject({error:"No Execution History"})
       }).catch(reject);
     });
-  }
-  static truncate(){
-    let obj = new Execution();
-    return obj.db.table(obj.table).truncate().execute();
-  }
-  static delete(targetId){
-    let obj = new Execution();
-    return obj.db.table(obj.table).delete().where(obj.primaryKey + ' = ' + targetId).execute();
   }
   static async getAverageExecutionTime(jobId){
     try{

@@ -39,16 +39,6 @@ class Job extends Record{
       throw err;
     }
   }
-  static async getAll(){
-    let jobs = [];
-    let obj = new Job();
-    let ids = await obj._getAll();
-    for(let id in ids){
-      let job = await new Job(ids[id][obj.primaryKey]).init();
-      jobs.push(job.getPublicProperties());
-    }
-    return jobs;
-  }
   static async getByHost(hostname, isImg = false){
     return new Promise((resolve,reject)=>{
       let obj = new Job();
@@ -77,19 +67,6 @@ class Job extends Record{
         resolve(true);
       }).catch(reject);
     });
-  }
-  static truncate(){
-    let obj = new Job();
-    return obj.db.table(obj.table).truncate().execute();
-  }
-  static async delete(targetId){
-    try{
-      await Execution.deleteJobHistory(targetId);
-      let obj = new Job();
-      return obj.db.table(obj.table).delete().where(obj.primaryKey + ' = ' + targetId).execute();
-    }catch(err){
-      throw err;
-    }
   }
   static getPatternInterval(patternStr){
     try{
