@@ -10,6 +10,12 @@ const Execution = require('./src/models/execution');
   // await Job.truncate();
   // await Execution.truncate();
   //await Execution.db.close();
+  let exec = new Execution();
+  exec.jobId = 1;
+  exec.startTime = new Date().toISOString().substring(0, 19).replace('T', ' ');
+  exec.endTime = new Date(Date.now() + 5*60000).toISOString().substring(0, 19).replace('T', ' ');
+  //console.log(exec);
+  await exec.create();
 })();
 
 // const testJob = {

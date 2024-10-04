@@ -60,8 +60,8 @@ For any host whose jobs one wants to track using this service, user should first
 
 ### next/
 
-* [GetNextExecutionByCronPattern](getNextExecutionByCronPattern.md)
-* [GetNextExecutionByJobId](getNextExecutionByJobId.md)
+* [GetNextExecutionByCronPattern](./docs/getNextExecutionByCronPattern.md)
+* [GetNextExecutionByJobId](./docs/getNextExecutionByJobId.md)
 
 ### build/
 

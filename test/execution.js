@@ -8,8 +8,8 @@ const should = chai.should();
 
 const testModel = {
   jobId:'99',
-  startTime:new Date(),
-  endTime:new Date(),
+  startTime:new Date().toISOString().substring(0, 19).replace('T', ' '),
+  endTime:new Date().toISOString().substring(0, 19).replace('T', ' '),
   output:'/tmp/'
 };
 
@@ -39,16 +39,23 @@ describe('Executions',()=>{
   });
   describe('/POST execution',()=>{
     it('should POST a new execution',(done)=>{
-      chai.request(server).post('/execution').send(testModel).end((err,res)=>{
+      chai.request(server)
+      .post('/execution')
+      .field('Content-Type','multipart/form-data')
+      .field('jobId',testModel.jobId)
+      .field('startTime',testModel.startTime)
+      .field('endTime',testModel.endTime)
+      .field('output',testModel.output)
+      .end((err,res)=>{
         res.should.have.status(200);
         res.body.should.be.a('object');
         res.body.should.have.property('id');
         res.body.should.have.property('jobId');
         res.body.should.have.property('startTime');
         res.body.should.have.property('endTime');
-        res.body.should.have.property('output');
+        res.body.should.have.property('output').eql(testModel.output);
+        done();
       });
-      done();
     });
   });
   describe('/GET/:id execution',()=>{
@@ -63,8 +70,8 @@ describe('Executions',()=>{
           res.body.should.have.property('startTime');
           res.body.should.have.property('endTime');
           res.body.should.have.property('output');
+          done();
         });
-        done();
       });
     });
   });
@@ -74,12 +81,16 @@ describe('Executions',()=>{
       let updateModel = testModel;
       updateModel.output = '/tmp/trash';
       model.create().then(()=>{
-        chai.request(server).put('/execution/' + model.id).send(updateModel).end((err,res)=>{
+        chai.request(server)
+        .put('/execution/' + model.id)
+        .field('Content-Type','multipart/form-data')
+        .field('output',updateModel.output)
+        .end((err,res)=>{
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('output').eql(updateModel.output);
+          done();
         });
-        done();
       });
     });
   });

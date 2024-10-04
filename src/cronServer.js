@@ -53,7 +53,7 @@ class CronServer{
       const bb = busboy({headers:req.headers});
       if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
         try{
-          let model = await ModelFactory.get(req.params.id).init();
+          let model = await ModelFactory.get(req.originalUrl.replace(/[^a-zA-Z]/g, ""),req.params.id).init();
           bb.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{model[fieldname] = val == CronServer.NullStr ? null:val; });
           bb.on('finish',async ()=>{
             await model.update();
@@ -142,7 +142,7 @@ class CronServer{
         model.translateDates();
         let ret = model.getPublicProperties();
         model = await model.create().catch((err)=>{
-          console.log(err);
+          return res.status(400).send(err);
         });
         return res.send(model.getPublicProperties());
       });

@@ -14,13 +14,13 @@ const modelClasses = {
 module.exports = {
   get: (name,id) => {
     if(!models[name]){
-      throw new Exception(`Model ${name} does not exist`);
+      throw new Error(`Model ${name} does not exist`);
     }
     return models[name](id);
   },
   getClass: (name) => {
     if(!models[name]){
-      throw new Exception(`Model ${name} does not exist`);
+      throw new Error(`Model ${name} does not exist`);
     }
     return modelClasses[name];
   }
