@@ -7,6 +7,7 @@ const ModelFactory = require('./modelFactory');
 
 class CronServer{
   static NullStr = 'null';
+  static MaxPost = 10485760; //10MB
   static verifyToken(auth_token){
     if(auth_token === undefined){
       throw {error:'Token not present'};
@@ -124,7 +125,7 @@ class CronServer{
   }
   async postExecution(req,res,next){
     if(process.env.NODE_ENV != 'production' || await CronServer.checkToken(req,res,next)){
-      const bb = busboy({headers:req.headers});
+      const bb = busboy({headers:req.headers, fieldSize: CronServer.MaxPost}); //10mb
       let model = ModelFactory.get('execution');
       let fileContents = '';
       bb.on('file',(fieldname,file,filename,encoding,mimetype)=>{
