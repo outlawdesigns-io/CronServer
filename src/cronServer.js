@@ -133,7 +133,7 @@ class CronServer{
           fileContents += data;
         });
         file.on('end',()=>{
-          model.output = fileContents;
+          model.output = fileContents.replace(/[^ -~]/g, '');
         });
       });
       bb.on('field',(fieldname,val,fieldnameTruncated,valTruncated,encoding,mimetype)=>{
