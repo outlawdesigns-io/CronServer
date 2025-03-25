@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+  backend:
+    image: cronserver-expressjs
+    build:
+      context: $DOCKER_BUILD_DIR/CronMonitor/
+      dockerfile: $DOCKER_BUILD_DIR/CronMonitor/Dockerfile
+      args:
+        ENV: $NODE_BUILD_ENV
+    ports:
+      - '9550:9550'
