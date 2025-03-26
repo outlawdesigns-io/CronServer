@@ -3,7 +3,7 @@ process.env.NODE_ENV = 'testing';
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../index');
-const ModelFactory = require('../src/modelFactory');
+const ModelFactory = require('outlawdesigns.io.cronmonitorsdk');
 
 const should = chai.should();
 

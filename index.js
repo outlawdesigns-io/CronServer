@@ -6,6 +6,7 @@ const CronServer = require('./src/cronServer');
 
 global.config = require('./config');
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.MYSQL_CRON_DB = global.config[process.env.NODE_ENV].DB_DB || 'cron_test';
 
 
 /*SETUP THE EXPRESS SERVER*/

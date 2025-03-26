@@ -3,7 +3,8 @@ process.env.NODE_ENV = 'testing';
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../index');
-const Execution = require('../src/models/execution');
+// const Execution = require('../src/models/execution');
+const ModelFactory = require('outlawdesigns.io.cronmonitorsdk');
 const should = chai.should();
 
 const testModel = {
@@ -14,7 +15,7 @@ const testModel = {
 };
 
 function _createModel(targetObj){
-  let model = new Execution();
+  let model = ModelFactory.get('execution');
   for(const [key,value] of Object.entries(targetObj)){
     model[key] = value;
   }
@@ -25,7 +26,7 @@ chai.use(chaiHttp);
 
 describe('Executions',()=>{
   beforeEach((done)=>{
-    Execution.truncate().then(()=>{done()});
+    ModelFactory.getClass('execution').truncate().then(()=>{done()});
   });
   describe('/GET execution',()=>{
     it('should GET all the executions',(done)=>{

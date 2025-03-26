@@ -3,7 +3,7 @@
 const http = require('https');
 const busboy = require('busboy');
 
-const ModelFactory = require('./modelFactory');
+const ModelFactory = require('outlawdesigns.io.cronmonitorsdk');
 
 class CronServer{
   static NullStr = 'null';
