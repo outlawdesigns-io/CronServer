@@ -1,12 +1,11 @@
 const express = require('express');
 const http = require('https');
 const fs = require('fs');
+const CronServer = require('./src/cronServer');
 
 global.config = require('./config');
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 process.env.MYSQL_CRON_DB = global.config[process.env.NODE_ENV].DB_DB || 'cron_test';
-
-const CronServer = require('./src/cronServer');
 
 
 /*SETUP THE EXPRESS SERVER*/
