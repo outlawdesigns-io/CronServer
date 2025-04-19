@@ -33,7 +33,8 @@ class CronServer{
       res.status(400).send('auth_token missing.');
       return false;
     }
-    if(!this._authClient.isTokenValid(req.headers['auth_token'])){
+    let tokenValid = await this._authClient.isTokenValid(req.headers['auth_token']);
+    if(!tokenValid){
       res.status(400).send('Access Denied. Invalid Token.');
       return false
     }
