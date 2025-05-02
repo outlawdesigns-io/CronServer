@@ -10,17 +10,17 @@ process.env.OD_ACCOUNTS_BASE_URL = 'https://localhost:9661';
 export default {
   development:{
     PORT:9550,
-    SSLCERTPATH:'/etc/apache2/certs/fullchain.pem',
-    SSLKEYPATH:'/etc/apache2/certs/privkey.pem',
+    SSLCERTPATH: '/etc/apache2/certs/fullchain.pem',
+    SSLKEYPATH: '/etc/apache2/certs/privkey.pem',
   },
   testing:{
     PORT:9550,
-    SSLCERTPATH:'/etc/apache2/certs/fullchain.pem',
-    SSLKEYPATH:'/etc/apache2/certs/privkey.pem',
+    SSLCERTPATH: '/etc/apache2/certs/fullchain.pem',
+    SSLKEYPATH: '/etc/apache2/certs/privkey.pem',
   },
   production:{
     PORT:9550,
-    SSLCERTPATH:'../CurrentCerts/fullchain.pem',
-    SSLKEYPATH:'../CurrentCerts/privkey.pem',
+    SSLCERTPATH: '/etc/apache2/certs/fullchain.pem',
+    SSLKEYPATH: '/etc/apache2/certs/privkey.pem',
   }
 };
