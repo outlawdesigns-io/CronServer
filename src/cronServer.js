@@ -97,9 +97,12 @@ class CronServer{
             await model.update();
             return res.send(model.getPublicProperties());
           });
+          bb.on('error',(err)=>{
+            return res.status(400).send({error:err.message});
+          });
           return req.pipe(bb);
         }catch(err){
-          res.status(400).send(err);
+          return res.status(400).send(err);
         }
       }
     }
