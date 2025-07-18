@@ -3,13 +3,14 @@
 import http from 'https';
 import busboy from 'busboy';
 import ModelFactory from '@outlawdesigns/cronmonitorsdk';
-import authClient from '@outlawdesigns/authenticationclient';
+// import authClient from '@outlawdesigns/authenticationclient';
+import authClient from '../../../AuthenticationClient-JS/index.js';
 
 class CronServer{
   static PostErrorStr = 'POSTs must be made as multipart/form-data';
   static NullStr = 'null';
   static MaxPost = 10485760; //10MB
-  constructor(){
+  constructor(oauthIssuerUrl, oathClientId){
     this.checkToken = this.checkToken.bind(this);
     this.getModel = this.getModel.bind(this);
     this.getAll = this.getAll.bind(this);
@@ -26,19 +27,17 @@ class CronServer{
     this.buildCronFile = this.buildCronFile.bind(this);
     this.getJobAverageExecution = this.getJobAverageExecution.bind(this);
     this._authClient = authClient;
-    this._authClient.init();
+    this._authClient.init(oauthIssuerUrl, oathClientId);
   }
   async checkToken(req,res,next){
-    if(!req.headers['auth_token']){
-      res.status(400).send('auth_token missing.');
-      return false;
+    let auth_token = req.headers['auth_token'];
+    try{
+      let resp = await this._authClient.verifyAccessToken(auth_token,'');
+      return true;
+    }catch(err){
+      console.log(err);
+      res.status(403).send({error:err.message});
     }
-    let tokenValid = await this._authClient.isTokenValid(req.headers['auth_token']);
-    if(!tokenValid){
-      res.status(400).send('Access Denied. Invalid Token.');
-      return false
-    }
-    return true;
   }
   getModel(modelStr){
     return async (req,res,next)=>{

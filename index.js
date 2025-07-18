@@ -27,7 +27,8 @@ if(process.env.NODE_ENV !== 'testing'){
   app.use(morgan('combined'));
 }
 
-const cronServer = new CronServer();
+process.env.NODE_TLS_REJECT_UNAUTHORIZED=0;
+const cronServer = new CronServer(process.env.AUTH_DISCOVERY_URI, process.env.AUTH_CLIENT_ID);
 
 /*MAP ROUTES*/
 app.get('/last/:jobId',cronServer.getLastExecution);
