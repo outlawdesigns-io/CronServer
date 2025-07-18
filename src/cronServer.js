@@ -30,13 +30,12 @@ class CronServer{
     this._authClient.init(oauthIssuerUrl, oathClientId);
   }
   async checkToken(req,res,next){
-    let auth_token = req.headers['auth_token'];
+    let auth_token = (req.headers['authorization'] || '' ).split(' ')[1] || null;
     try{
       let resp = await this._authClient.verifyAccessToken(auth_token,'');
       return true;
     }catch(err){
-      console.log(err);
-      res.status(403).send({error:err.message});
+      return res.status(403).send({error:err.message});
     }
   }
   getModel(modelStr){
