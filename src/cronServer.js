@@ -10,7 +10,7 @@ class CronServer{
   static PostErrorStr = 'POSTs must be made as multipart/form-data';
   static NullStr = 'null';
   static MaxPost = 10485760; //10MB
-  constructor(oauthIssuerUrl, oathClientId){
+  constructor(oauthIssuerUrl, oathClientId, oauthAudience){
     this.checkToken = this.checkToken.bind(this);
     this.getModel = this.getModel.bind(this);
     this.getAll = this.getAll.bind(this);
@@ -26,13 +26,14 @@ class CronServer{
     this.postJob = this.postJob.bind(this);
     this.buildCronFile = this.buildCronFile.bind(this);
     this.getJobAverageExecution = this.getJobAverageExecution.bind(this);
+    this._authAudience = oauthAudience;
     this._authClient = authClient;
     this._authClient.init(oauthIssuerUrl, oathClientId);
   }
   async checkToken(req,res,next){
     let auth_token = (req.headers['authorization'] || '' ).split(' ')[1] || null;
     try{
-      let resp = await this._authClient.verifyAccessToken(auth_token,'');
+      let resp = await this._authClient.verifyAccessToken(auth_token,this._authAudience);
       return true;
     }catch(err){
       return res.status(403).send({error:err.message});

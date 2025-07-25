@@ -28,7 +28,7 @@ if(process.env.NODE_ENV !== 'testing'){
 }
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED=0;
-const cronServer = new CronServer(process.env.AUTH_DISCOVERY_URI, process.env.AUTH_CLIENT_ID);
+const cronServer = new CronServer(process.env.AUTH_DISCOVERY_URI, process.env.AUTH_CLIENT_ID, process.env.AUTH_CLIENT_AUDIENCE);
 
 /*MAP ROUTES*/
 app.get('/last/:jobId',cronServer.getLastExecution);
