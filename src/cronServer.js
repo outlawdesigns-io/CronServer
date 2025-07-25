@@ -36,7 +36,8 @@ class CronServer{
       let resp = await this._authClient.verifyAccessToken(auth_token,this._authAudience);
       return true;
     }catch(err){
-      return res.status(403).send({error:err.message});
+      return false;
+      //return res.status(403).send({error:err.message});
     }
   }
   getModel(modelStr){
