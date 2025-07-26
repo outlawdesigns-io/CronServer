@@ -198,10 +198,10 @@ class CronServer{
         let obj = job.getPublicProperties();
         obj['nextRun'] = job.getExecutionInterval().next().toString();
         obj['lastRun'] = job.getExecutionInterval().prev().toString();
-        res.send(obj);
+        return res.send(obj);
       }catch(err){
         console.log(err);
-        res.status(404).send('Not Found');
+        return res.status(404).send('Not Found');
       }
     }
   }
