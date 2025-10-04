@@ -3,8 +3,7 @@
 import http from 'https';
 import busboy from 'busboy';
 import ModelFactory from '@outlawdesigns/cronmonitorsdk';
-// import authClient from '@outlawdesigns/authenticationclient';
-import authClient from '../../../AuthenticationClient-JS/index.js';
+import authClient from '@outlawdesigns/authenticationclient';
 
 class CronServer{
   static PostErrorStr = 'POSTs must be made as multipart/form-data';
