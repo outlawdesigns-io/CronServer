@@ -10,6 +10,7 @@ services:
       AUTH_DISCOVERY_URI: $AUTH_DISCOVERY_URI
       AUTH_CLIENT_ID: $AUTH_CLIENT_ID
       AUTH_CLIENT_AUDIENCE: $AUTH_CLIENT_AUDIENCE
+      TZ: local
     build:
       context: ./
       dockerfile: ./Dockerfile
