@@ -3,7 +3,7 @@ import express from 'express';
 import http from 'https';
 import fs from 'fs';
 import CronServer from './src/cronServer.js';
-import config from './config.js';
+import './config.js';
 import morgan from 'morgan';
 
 global.config = config;
