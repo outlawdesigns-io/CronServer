@@ -48,6 +48,8 @@ class CronServer{
         }catch(err){
           return res.status(404).send('Not Found');
         }
+      }else{
+        res.status(400).send({message:'Token Verification Error.'});
       }
     }
   }
@@ -59,6 +61,8 @@ class CronServer{
         }catch(err){
           return res.status(400).send(err);
         }
+      }else{
+        res.status(400).send({message:'Token Verification Error.'});
       }
     }
   }
@@ -82,6 +86,8 @@ class CronServer{
           }
         });
         return req.pipe(bb);
+      }else{
+        res.status(400).send({message:'Token Verification Error.'});
       }
     }
   }
@@ -103,6 +109,8 @@ class CronServer{
         }catch(err){
           return res.status(400).send(err);
         }
+      }else{
+        res.status(400).send({message:'Token Verification Error.'});
       }
     }
   }
@@ -115,6 +123,8 @@ class CronServer{
         }catch(err){
           return res.status(400).send(err);
         }
+      }else{
+        res.status(400).send({message:'Token Verification Error.'});
       }
     }
   }
@@ -125,6 +135,8 @@ class CronServer{
       }catch(err){
         res.send(err);
       }
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
   async getNextJobExecution(req, res, next){
@@ -135,6 +147,8 @@ class CronServer{
       }catch(err){
         res.status(400).send(err);
       }
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
   async getNextPatternExecution(req,res,next){
@@ -145,6 +159,8 @@ class CronServer{
       }catch(err){
         res.status(400).send(err);
       }
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
   async postExecution(req,res,next){
@@ -172,6 +188,8 @@ class CronServer{
         return res.send(model.getPublicProperties());
       });
       return req.pipe(bb);
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
   async getAllJobs(req,res,next){
@@ -188,6 +206,8 @@ class CronServer{
         jobs.push(cleanObj);
       }
       res.send(jobs);
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
   async getJob(req,res,next){
@@ -202,6 +222,8 @@ class CronServer{
         console.log(err);
         return res.status(404).send('Not Found');
       }
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
   async postJob(req,res,next){
@@ -220,6 +242,8 @@ class CronServer{
         return res.send(returnObj);
       });
       return req.pipe(bb);
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
   async buildCronFile(req,res,next){
@@ -231,6 +255,8 @@ class CronServer{
         res.set({"Content-Disposition":"attachment; filename=\"crontab\""});
         res.send(fileStr);
       }
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
   async getJobAverageExecution(req,res,next){
@@ -242,6 +268,8 @@ class CronServer{
         // console.log(err);
         return res.send({'error':err.message});
       }
+    }else{
+      res.status(400).send({message:'Token Verification Error.'});
     }
   }
 }
