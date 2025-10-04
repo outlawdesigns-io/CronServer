@@ -60,16 +60,9 @@ app.post('/subscription',cronServer.postModel('subscription'));
 
 
 /*START SERVER*/
-if(process.env.NODE_ENV !== 'production'){
-  app.listen(global.config[process.env.NODE_ENV].PORT,()=>{
-    console.log(process.env.NODE_ENV + ' mode listening on port: ' + global.config[process.env.NODE_ENV].PORT);
-  });
-}else{
-  http.createServer({
-    key: fs.readFileSync(global.config[process.env.NODE_ENV].SSLKEYPATH),
-    cert: fs.readFileSync(global.config[process.env.NODE_ENV].SSLCERTPATH)
-  },app).listen(global.config[process.env.NODE_ENV].PORT,()=>{
-    console.log(process.env.NODE_ENV + ' mode listening on port: ' + global.config[process.env.NODE_ENV].PORT);
+if(process.env.NODE_ENV !== 'testing'){
+  app.listen(process.env.PORT,()=>{
+    console.log(process.env.NODE_ENV + ' mode listening on port: ' + process.env.PORT);
   });
 }
 
