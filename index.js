@@ -6,9 +6,6 @@ import CronServer from './src/cronServer.js';
 import './config.js';
 import morgan from 'morgan';
 
-global.config = config;
-
-
 /*SETUP THE EXPRESS SERVER*/
 const app = express();
 app.set('trust proxy',true);
