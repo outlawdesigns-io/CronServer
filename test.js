@@ -1,22 +1,25 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-global.config = require('./config');
-const Job = require('./src/models/job');
-const Execution = require('./src/models/execution');
+import config from './config.js';
+import ModelFactory from '@outlawdesigns/cronmonitorsdk';
 
-(async ()=>{
-  //let jobs = await Job.getByHost('api',false);
-  //console.log(jobs);
-  // await Execution.deleteJobHistory(10);
-  // await Job.truncate();
-  // await Execution.truncate();
-  //await Execution.db.close();
-  let exec = new Execution();
-  exec.jobId = 1;
-  exec.startTime = new Date().toISOString().substring(0, 19).replace('T', ' ');
-  exec.endTime = new Date(Date.now() + 5*60000).toISOString().substring(0, 19).replace('T', ' ');
-  //console.log(exec);
-  await exec.create();
-})();
+global.config = config;
+
+//let jobs = await Job.getByHost('api',false);
+//console.log(jobs);
+// await Execution.deleteJobHistory(10);
+// await Job.truncate();
+// await Execution.truncate();
+//await Execution.db.close();
+// let exec = new Execution();
+// exec.jobId = 1;
+// exec.startTime = new Date().toISOString().substring(0, 19).replace('T', ' ');
+// exec.endTime = new Date(Date.now() + 5*60000).toISOString().substring(0, 19).replace('T', ' ');
+// //console.log(exec);
+// await exec.create();
+let model = await ModelFactory.get('job',7).init();
+model.hostname = null;
+await model.update();
+console.log(model);
 
 // const testJob = {
 //   title:'test',
