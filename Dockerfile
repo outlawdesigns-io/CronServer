@@ -1,4 +1,5 @@
-FROM node:lts
+#Pinned to node:20 to ensure armv7 support
+FROM node:20-bullseye
 WORKDIR /usr/src/app/
 RUN mkdir -p /mnt/LOE/log
 COPY . .
