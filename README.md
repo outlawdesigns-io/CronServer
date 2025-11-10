@@ -1,3 +1,4 @@
+
 # CronMonitor REST API
 
 ## Preamble
@@ -8,13 +9,16 @@
 
 ### Security
 
-This API is accessible only by registered users of [outlawdesigns.io](https://outlawdesigns.io) who present a valid authorization token.
-Authorization tokens should be presented as a value of the `auth_token` header.
+This API is accessible only by registered users of [outlawdesigns.io](https://outlawdesigns.io) who present a valid Oauth2 access token.
 
-#### Sample Call
+#### Sample Token Acquisition
 ```
-curl --location --request GET 'https://api.outlawdesigns.io:9500/job/' \
---header 'auth_token: YOUR_TOKEN' \
+curl --location --request POST 'https://auth.outlawdesigns.io/oauth2/token' \
+--form 'grant_type="client_credentials"' \
+--form 'client_id="$CLIENT_ID"' \
+--form 'client_secret="CLIENT_SECRET"' \
+--form 'audience="https://cronservice.outlawdesigns.io"' \
+--form 'scope="openid, profile, email, roles"'
 ```
 
 ### Reporting performance or availability problems
@@ -29,9 +33,11 @@ Please report bugs with the API or the documentation on our [issue tracker](http
 
 For any host whose jobs one wants to track using this service, user should first:
  1. Install [cronWrapper.sh](https://gist.github.com/outlawstar4761/a1105f79ba4cd26916abce8a0f3bb139)
- 2. Set `CRON_USER` and `CRON_PASS` environment variables to valid outlawdesigns.io username/password combination
- 3. Register a job with the server
- 4. Configure `crontab` appropriately
+ 2. Create a `creds` directory containing `{jobId}.env` files containing
+    * `CRON_WRAPPER_CLIENT_ID={CLIENT_ID}`
+    *  `CRON_WRAPPER_CLIENT_SECRET={CLIENT_SECRET}`
+ 4. Register a job with the server
+ 5. Configure `crontab` appropriately
     * Template: `{cronTime} {cronWrapperPath}cronWrapper.sh {jobId} "{cmdToExec}" "{outfile}"`
     * Example: `*/1 * * * * /opt/scripts/cronWrapper.sh 1 "(time /backup.sh)" "/tmp/backup"`
 
@@ -81,22 +87,31 @@ Used for performing unit tests. When performing these tests, each model will tru
 
 ### Production
 
-Building in `production` mode will enforce authentication requirements and upgrades from `http` to `https`. Service will **not** respond to unauthenticated requests and production certificates must be in place.
+Building in `production` mode will enforce authentication requirements. Service will **not** respond to unauthenticated requests and `https` elevation is expected to be handled by a reverse-proxy.
 
 ### Sample build command
 ```
-docker build -t cronserver-expressjs:production . --build-arg ENV=production
+docker build -t cronserver-expressjs:production .
 ```
 ### Sample YAML entry
 
 ```
+services:
   backend:
     image: cronserver-expressjs
+    environment:
+      NODE_ENV: production
+      MYSQL_HOST: localhost
+      MYSQL_USER: root
+      MYSQL_PASS: example
+      MYSQL_CRON_DB: cron_test
+      AUTH_DISCOVERY_URI: https://auth.outlawdesigns.io/.well-known/openid-configuration
+      AUTH_CLIENT_ID: cronsuite-server
+      AUTH_CLIENT_AUDIENCE: https://cronservice.outlawdesigns.io
+      TZ: America/Chicago
     build:
-      context: /home/ubuntu/projects/CronMonitor/
-      dockerfile: /home/ubuntu/projects/CronMonitor/Dockerfile
-      args:
-        ENV: development
+      context: ./
+      dockerfile: ./Dockerfile
     ports:
       - '9550:9550'
 ```

@@ -1,19 +1,18 @@
-version: '3.1'
-
+services:
   backend:
     image: cronserver-expressjs
     environment:
-      MYSQL_HOST: $DOCKER_MYSQL_HOST
-      MYSQL_USER: $DOCKER_MYSQL_USER
-      MYSQL_PASS: $DOCKER_MYSQL_PASS
-      MYSQL_CRON_DB: $DOCKER_MYSQL_CRON_DB
-      OD_ACCOUNTS_BASE_URL: $OD_ACCOUNTS_BASE_URL
+      NODE_ENV: production
+      MYSQL_HOST: localhost
+      MYSQL_USER: root
+      MYSQL_PASS: example
+      MYSQL_CRON_DB: cron_test
+      AUTH_DISCOVERY_URI: https://auth.outlawdesigns.io/.well-known/openid-configuration
+      AUTH_CLIENT_ID: cronsuite-server
+      AUTH_CLIENT_AUDIENCE: https://cronservice.outlawdesigns.io
+      TZ: America/Chicago
     build:
-      context: $DOCKER_BUILD_DIR/CronServer/
-      dockerfile: $DOCKER_BUILD_DIR/CronServer/Dockerfile
-      args:
-        ENV: $NODE_ENV
+      context: ./
+      dockerfile: ./Dockerfile
     ports:
       - '9550:9550'
-    volumes:
-      - $DOCKER_CERT_DIR:/etc/apache2/certs

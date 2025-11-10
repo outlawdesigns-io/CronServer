@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@outlawdesigns/authenticationclient": "^1.0.2",
+    "@outlawdesigns/authenticationclient": "^2.0.3",
     "@outlawdesigns/cronmonitorsdk": "^1.0.1",
     "busboy": "^1.6.0",
     "express": "^4.17.1",

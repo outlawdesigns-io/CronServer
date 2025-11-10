@@ -3,18 +3,15 @@ import express from 'express';
 import http from 'https';
 import fs from 'fs';
 import CronServer from './src/cronServer.js';
-import config from './config.js';
+import './config.js';
 import morgan from 'morgan';
-
-global.config = config;
-
 
 /*SETUP THE EXPRESS SERVER*/
 const app = express();
 app.set('trust proxy',true);
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, auth_token");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   res.header("Access-Control-Allow-Methods", "*");
   next();
 });
@@ -27,7 +24,8 @@ if(process.env.NODE_ENV !== 'testing'){
   app.use(morgan('combined'));
 }
 
-const cronServer = new CronServer();
+process.env.NODE_TLS_REJECT_UNAUTHORIZED=0;
+const cronServer = new CronServer(process.env.AUTH_DISCOVERY_URI, process.env.AUTH_CLIENT_ID, process.env.AUTH_CLIENT_AUDIENCE);
 
 /*MAP ROUTES*/
 app.get('/last/:jobId',cronServer.getLastExecution);
@@ -59,16 +57,9 @@ app.post('/subscription',cronServer.postModel('subscription'));
 
 
 /*START SERVER*/
-if(process.env.NODE_ENV !== 'production'){
-  app.listen(global.config[process.env.NODE_ENV].PORT,()=>{
-    console.log(process.env.NODE_ENV + ' mode listening on port: ' + global.config[process.env.NODE_ENV].PORT);
-  });
-}else{
-  http.createServer({
-    key: fs.readFileSync(global.config[process.env.NODE_ENV].SSLKEYPATH),
-    cert: fs.readFileSync(global.config[process.env.NODE_ENV].SSLCERTPATH)
-  },app).listen(global.config[process.env.NODE_ENV].PORT,()=>{
-    console.log(process.env.NODE_ENV + ' mode listening on port: ' + global.config[process.env.NODE_ENV].PORT);
+if(process.env.NODE_ENV !== 'testing'){
+  app.listen(process.env.PORT,()=>{
+    console.log(process.env.NODE_ENV + ' mode listening on port: ' + process.env.PORT);
   });
 }
 
