@@ -15,4 +15,4 @@ services:
       context: ./
       dockerfile: ./Dockerfile
     ports:
-      - '9550:9550'
+      - '9550:80'

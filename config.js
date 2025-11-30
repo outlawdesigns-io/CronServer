@@ -8,4 +8,4 @@ process.env.MYSQL_CRON_DB = process.env.MYSQL_CRON_DB || 'cron_test';
 process.env.AUTH_DISCOVERY_URI = process.env.AUTH_DISCOVERY_URI || 'https://auth.outlawdesigns.io/.well-known/openid-configuration';
 process.env.AUTH_CLIENT_ID =  process.env.AUTH_CLIENT_ID || '2ad8ece1-aa86-4e8f-90d2-470d2ef6f862';
 process.env.AUTH_CLIENT_AUDIENCE = process.env.AUTH_CLIENT_AUDIENCE || 'https://localhost';
-process.env.PORT = process.env.port || 9550;
+process.env.PORT = process.env.port || 80;
